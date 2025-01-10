@@ -77,8 +77,8 @@ function App() {
 
 ## Documentation
 
-For detailed documentation, visit [documentation](https://github.com/yourusername/bitplayer/docs).
+For detailed documentation, visit [documentation](https://github.com/sh20raj/bitplayer/docs).
 
 ## License
 
-MIT © [Your Name]
+MIT © sh20raj
