@@ -1,0 +1,47 @@
+{
+  "name": "bitplayer",
+  "version": "1.0.0",
+  "description": "A beautiful, minimalistic, modern HTML5 video player",
+  "main": "dist/bitplayer.js",
+  "module": "dist/bitplayer.esm.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "rollup -c",
+    "dev": "rollup -c -w",
+    "test": "jest",
+    "lint": "eslint src"
+  },
+  "keywords": [
+    "video-player",
+    "html5",
+    "player",
+    "streaming",
+    "media",
+    "react-video",
+    "video"
+  ],
+  "author": "sh20raj",
+  "repository": "https://github.com/sh20raj/bitplayer",
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/core": "^7.23.0",
+    "@babel/preset-env": "^7.22.20",
+    "@babel/preset-react": "^7.22.15",
+    "@babel/preset-typescript": "^7.23.0",
+    "@rollup/plugin-babel": "^6.0.4",
+    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-typescript": "^11.1.5",
+    "@types/react": "^18.2.28",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.31",
+    "rollup": "^4.1.4",
+    "rollup-plugin-postcss": "^4.0.2",
+    "rollup-plugin-terser": "^7.0.2",
+    "typescript": "^5.2.2"
+  },
+  "peerDependencies": {
+    "react": ">=16.8.0",
+    "react-dom": ">=16.8.0"
+  }
+}
