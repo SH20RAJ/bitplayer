@@ -2,6 +2,15 @@
 
 A beautiful, minimalistic, modern HTML5 video player with React support.
 
+
+[![Visitors](https://api.visitorbadge.io/api/combined?path=https%3A%2F%2Fgithub.com%2Fsh20raj%2Fbitplayer&labelColor=%232ccce4&countColor=%23ba68c8&style=flat)](https://visitorbadge.io/status?path=https%3A%2F%2Fgithub.com%2Fsh20raj%2Fbitplayer)
+[![npm version](https://badge.fury.io/js/bitplayer.svg)](https://badge.fury.io/js/bitplayer)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
+[![GitHub issues](https://img.shields.io/github/issues/sh20raj/bitplayer.svg)](https://github.com/sh20raj/bitplayer/issues)
+
+
+
 ## Features
 
 - 🎨 Minimalistic and modern design
