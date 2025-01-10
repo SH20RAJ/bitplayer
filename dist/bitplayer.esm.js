@@ -52,87 +52,36 @@ var BitPlayer = /** @class */ (function () {
         this.createControls();
         this.attachEventListeners();
         this.setupKeyboardControls();
+        // Initialize with default state
+        this.container.classList.add('bitplayer');
+        this.container.classList.add("bitplayer-theme-".concat(this.options.theme || 'dark'));
+        if (this.options.muted) {
+            this.video.muted = true;
+        }
+        if (this.options.autoplay) {
+            this.video.autoplay = true;
+        }
     };
     BitPlayer.prototype.createVideoElement = function () {
         this.video = document.createElement('video');
         this.video.className = 'bitplayer-video';
-        Object.assign(this.video, {
-            autoplay: this.options.autoplay,
-            muted: this.options.muted,
-            loop: this.options.loop,
-            preload: this.options.preload,
-            poster: this.options.poster
-        });
+        if (this.options.poster) {
+            this.video.poster = this.options.poster;
+        }
+        if (this.options.preload) {
+            this.video.preload = this.options.preload;
+        }
         this.container.appendChild(this.video);
     };
     BitPlayer.prototype.createControls = function () {
-        if (!this.options.controls)
-            return;
+        var _a;
         this.controls = document.createElement('div');
         this.controls.className = 'bitplayer-controls';
-        // Create control elements
-        var playButton = this.createButton('play');
-        var volumeControl = this.createVolumeControl();
-        var progressBar = this.createProgressBar();
-        var timeDisplay = this.createTimeDisplay();
-        var settingsButton = this.createSettingsButton();
-        var fullscreenButton = this.createButton('fullscreen');
-        // Append controls
-        this.controls.append(playButton, volumeControl, progressBar, timeDisplay, settingsButton, fullscreenButton);
+        var controlsHTML = "\n      <div class=\"bitplayer-control-group\">\n        <button class=\"bitplayer-play-button\" aria-label=\"Play\">\n          ".concat(this.getIcon('play'), "\n        </button>\n        <div class=\"bitplayer-time\">\n          <span class=\"bitplayer-current-time\">0:00</span>\n          <span class=\"bitplayer-duration\">0:00</span>\n        </div>\n      </div>\n      <div class=\"bitplayer-progress\">\n        <input type=\"range\" class=\"bitplayer-progress-bar\" min=\"0\" max=\"100\" step=\"0.1\" value=\"0\">\n        <div class=\"bitplayer-progress-buffer\"></div>\n      </div>\n      <div class=\"bitplayer-control-group\">\n        <div class=\"bitplayer-volume\">\n          <button class=\"bitplayer-volume-button\" aria-label=\"Volume\">\n            ").concat(this.getIcon('volume'), "\n          </button>\n          <input type=\"range\" class=\"bitplayer-volume-bar\" min=\"0\" max=\"1\" step=\"0.1\" value=\"1\">\n        </div>\n        <div class=\"bitplayer-settings\">\n          <button class=\"bitplayer-settings-button\" aria-label=\"Settings\">\n            ").concat(this.getIcon('settings'), "\n          </button>\n          <div class=\"bitplayer-settings-menu\">\n            <div class=\"bitplayer-settings-speed\">\n              <span>Playback Speed</span>\n              <select>\n                ").concat((_a = this.options.playbackRates) === null || _a === void 0 ? void 0 : _a.map(function (rate) {
+            return "<option value=\"".concat(rate, "\">").concat(rate, "x</option>");
+        }).join(''), "\n              </select>\n            </div>\n            <div class=\"bitplayer-settings-quality\">\n              <span>Quality</span>\n              <select></select>\n            </div>\n          </div>\n        </div>\n        <button class=\"bitplayer-fullscreen-button\" aria-label=\"Fullscreen\">\n          ").concat(this.getIcon('fullscreen'), "\n        </button>\n      </div>\n    ");
+        this.controls.innerHTML = controlsHTML;
         this.container.appendChild(this.controls);
-    };
-    BitPlayer.prototype.createButton = function (type) {
-        var button = document.createElement('button');
-        button.className = "bitplayer-".concat(type, "-button");
-        button.innerHTML = this.getButtonIcon(type);
-        return button;
-    };
-    BitPlayer.prototype.createVolumeControl = function () {
-        var container = document.createElement('div');
-        container.className = 'bitplayer-volume-container';
-        var button = this.createButton('volume');
-        var slider = document.createElement('input');
-        Object.assign(slider, {
-            type: 'range',
-            min: 0,
-            max: 1,
-            step: 0.1,
-            value: this.volume,
-            className: 'bitplayer-volume-slider'
-        });
-        container.append(button, slider);
-        return container;
-    };
-    BitPlayer.prototype.createProgressBar = function () {
-        var container = document.createElement('div');
-        container.className = 'bitplayer-progress-container';
-        var progress = document.createElement('progress');
-        progress.className = 'bitplayer-progress';
-        progress.max = 100;
-        progress.value = 0;
-        container.appendChild(progress);
-        return container;
-    };
-    BitPlayer.prototype.createTimeDisplay = function () {
-        var display = document.createElement('div');
-        display.className = 'bitplayer-time-display';
-        display.textContent = '0:00 / 0:00';
-        return display;
-    };
-    BitPlayer.prototype.createSettingsButton = function () {
-        var _this = this;
-        var button = this.createButton('settings');
-        var menu = document.createElement('div');
-        menu.className = 'bitplayer-settings-menu';
-        // Add playback rate options
-        this.options.playbackRates.forEach(function (rate) {
-            var option = document.createElement('button');
-            option.textContent = "".concat(rate, "x");
-            option.onclick = function () { return _this.setPlaybackRate(rate); };
-            menu.appendChild(option);
-        });
-        button.appendChild(menu);
-        return button;
     };
     BitPlayer.prototype.attachEventListeners = function () {
         var _this = this;
@@ -147,7 +96,7 @@ var BitPlayer = /** @class */ (function () {
         if (this.controls) {
             (_a = this.controls.querySelector('.bitplayer-play-button')) === null || _a === void 0 ? void 0 : _a.addEventListener('click', function () { return _this.togglePlay(); });
             (_b = this.controls.querySelector('.bitplayer-fullscreen-button')) === null || _b === void 0 ? void 0 : _b.addEventListener('click', function () { return _this.toggleFullscreen(); });
-            (_c = this.controls.querySelector('.bitplayer-volume-slider')) === null || _c === void 0 ? void 0 : _c.addEventListener('input', function (e) {
+            (_c = this.controls.querySelector('.bitplayer-volume-bar')) === null || _c === void 0 ? void 0 : _c.addEventListener('input', function (e) {
                 var target = e.target;
                 _this.setVolume(parseFloat(target.value));
             });
@@ -236,18 +185,19 @@ var BitPlayer = /** @class */ (function () {
     BitPlayer.prototype.updateTimeDisplay = function () {
         if (!this.controls)
             return;
-        var timeDisplay = this.controls.querySelector('.bitplayer-time-display');
+        var timeDisplay = this.controls.querySelector('.bitplayer-time');
         if (!timeDisplay)
             return;
         var current = this.formatTime(this.video.currentTime);
         var total = this.formatTime(this.video.duration);
-        timeDisplay.textContent = "".concat(current, " / ").concat(total);
+        timeDisplay.querySelector('.bitplayer-current-time').textContent = current;
+        timeDisplay.querySelector('.bitplayer-duration').textContent = total;
     };
     BitPlayer.prototype.onTimeUpdate = function () {
         this.updateTimeDisplay();
         if (!this.controls)
             return;
-        var progress = this.controls.querySelector('.bitplayer-progress');
+        var progress = this.controls.querySelector('.bitplayer-progress-bar');
         if (progress) {
             progress.value = (this.video.currentTime / this.video.duration) * 100;
         }
@@ -257,7 +207,7 @@ var BitPlayer = /** @class */ (function () {
             return;
         var playButton = this.controls.querySelector('.bitplayer-play-button');
         if (playButton) {
-            playButton.innerHTML = this.getButtonIcon(this.video.paused ? 'play' : 'pause');
+            playButton.innerHTML = this.getIcon(this.video.paused ? 'play' : 'pause');
         }
     };
     BitPlayer.prototype.onVolumeChange = function () {
@@ -265,10 +215,10 @@ var BitPlayer = /** @class */ (function () {
             return;
         var volumeButton = this.controls.querySelector('.bitplayer-volume-button');
         if (volumeButton) {
-            volumeButton.innerHTML = this.getButtonIcon(this.video.muted || this.video.volume === 0 ? 'volume-mute' : 'volume');
+            volumeButton.innerHTML = this.getIcon(this.video.muted || this.video.volume === 0 ? 'volume-mute' : 'volume');
         }
     };
-    BitPlayer.prototype.getButtonIcon = function (type) {
+    BitPlayer.prototype.getIcon = function (type) {
         var icons = {
             play: '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>',
             pause: '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>',

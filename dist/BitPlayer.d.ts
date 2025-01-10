@@ -21,11 +21,6 @@ declare class BitPlayer {
     private init;
     private createVideoElement;
     private createControls;
-    private createButton;
-    private createVolumeControl;
-    private createProgressBar;
-    private createTimeDisplay;
-    private createSettingsButton;
     private attachEventListeners;
     private setupKeyboardControls;
     play(): Promise<void>;
@@ -41,6 +36,6 @@ declare class BitPlayer {
     private onTimeUpdate;
     private onPlayStateChange;
     private onVolumeChange;
-    private getButtonIcon;
+    private getIcon;
 }
 export default BitPlayer;

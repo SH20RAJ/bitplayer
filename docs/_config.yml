@@ -1,0 +1,30 @@
+title: BitPlayer Documentation
+description: Documentation for BitPlayer - A beautiful, minimalistic, modern HTML5 video player
+theme: just-the-docs
+url: https://sh20raj.github.io/bitplayer
+baseurl: /bitplayer
+
+# Theme settings
+color_scheme: dark
+search_enabled: true
+heading_anchors: true
+nav_external_links:
+  - title: BitPlayer on GitHub
+    url: https://github.com/sh20raj/bitplayer
+    hide_icon: false
+
+# Footer
+footer_content: "Copyright &copy; 2025 sh20raj. Distributed under an MIT license."
+last_edit_timestamp: true
+last_edit_time_format: "%b %e %Y at %I:%M %p"
+
+# Collections
+collections:
+  docs:
+    permalink: "/:collection/:path/"
+    output: true
+
+just_the_docs:
+  collections:
+    docs:
+      name: Documentation

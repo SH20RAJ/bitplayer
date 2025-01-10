@@ -47,109 +47,87 @@ class BitPlayer {
     this.createControls();
     this.attachEventListeners();
     this.setupKeyboardControls();
+    
+    // Initialize with default state
+    this.container.classList.add('bitplayer');
+    this.container.classList.add(`bitplayer-theme-${this.options.theme || 'dark'}`);
+    
+    if (this.options.muted) {
+      this.video.muted = true;
+    }
+    
+    if (this.options.autoplay) {
+      this.video.autoplay = true;
+    }
   }
 
   private createVideoElement(): void {
     this.video = document.createElement('video');
     this.video.className = 'bitplayer-video';
-    Object.assign(this.video, {
-      autoplay: this.options.autoplay,
-      muted: this.options.muted,
-      loop: this.options.loop,
-      preload: this.options.preload,
-      poster: this.options.poster
-    });
+    
+    if (this.options.poster) {
+      this.video.poster = this.options.poster;
+    }
+    
+    if (this.options.preload) {
+      this.video.preload = this.options.preload;
+    }
+    
     this.container.appendChild(this.video);
   }
 
   private createControls(): void {
-    if (!this.options.controls) return;
-
     this.controls = document.createElement('div');
     this.controls.className = 'bitplayer-controls';
     
-    // Create control elements
-    const playButton = this.createButton('play');
-    const volumeControl = this.createVolumeControl();
-    const progressBar = this.createProgressBar();
-    const timeDisplay = this.createTimeDisplay();
-    const settingsButton = this.createSettingsButton();
-    const fullscreenButton = this.createButton('fullscreen');
-
-    // Append controls
-    this.controls.append(
-      playButton,
-      volumeControl,
-      progressBar,
-      timeDisplay,
-      settingsButton,
-      fullscreenButton
-    );
-
+    const controlsHTML = `
+      <div class="bitplayer-control-group">
+        <button class="bitplayer-play-button" aria-label="Play">
+          ${this.getIcon('play')}
+        </button>
+        <div class="bitplayer-time">
+          <span class="bitplayer-current-time">0:00</span>
+          <span class="bitplayer-duration">0:00</span>
+        </div>
+      </div>
+      <div class="bitplayer-progress">
+        <input type="range" class="bitplayer-progress-bar" min="0" max="100" step="0.1" value="0">
+        <div class="bitplayer-progress-buffer"></div>
+      </div>
+      <div class="bitplayer-control-group">
+        <div class="bitplayer-volume">
+          <button class="bitplayer-volume-button" aria-label="Volume">
+            ${this.getIcon('volume')}
+          </button>
+          <input type="range" class="bitplayer-volume-bar" min="0" max="1" step="0.1" value="1">
+        </div>
+        <div class="bitplayer-settings">
+          <button class="bitplayer-settings-button" aria-label="Settings">
+            ${this.getIcon('settings')}
+          </button>
+          <div class="bitplayer-settings-menu">
+            <div class="bitplayer-settings-speed">
+              <span>Playback Speed</span>
+              <select>
+                ${this.options.playbackRates?.map(rate => 
+                  `<option value="${rate}">${rate}x</option>`
+                ).join('')}
+              </select>
+            </div>
+            <div class="bitplayer-settings-quality">
+              <span>Quality</span>
+              <select></select>
+            </div>
+          </div>
+        </div>
+        <button class="bitplayer-fullscreen-button" aria-label="Fullscreen">
+          ${this.getIcon('fullscreen')}
+        </button>
+      </div>
+    `;
+    
+    this.controls.innerHTML = controlsHTML;
     this.container.appendChild(this.controls);
-  }
-
-  private createButton(type: string): HTMLButtonElement {
-    const button = document.createElement('button');
-    button.className = `bitplayer-${type}-button`;
-    button.innerHTML = this.getButtonIcon(type);
-    return button;
-  }
-
-  private createVolumeControl(): HTMLElement {
-    const container = document.createElement('div');
-    container.className = 'bitplayer-volume-container';
-    
-    const button = this.createButton('volume');
-    const slider = document.createElement('input');
-    Object.assign(slider, {
-      type: 'range',
-      min: 0,
-      max: 1,
-      step: 0.1,
-      value: this.volume,
-      className: 'bitplayer-volume-slider'
-    });
-
-    container.append(button, slider);
-    return container;
-  }
-
-  private createProgressBar(): HTMLElement {
-    const container = document.createElement('div');
-    container.className = 'bitplayer-progress-container';
-    
-    const progress = document.createElement('progress');
-    progress.className = 'bitplayer-progress';
-    progress.max = 100;
-    progress.value = 0;
-
-    container.appendChild(progress);
-    return container;
-  }
-
-  private createTimeDisplay(): HTMLElement {
-    const display = document.createElement('div');
-    display.className = 'bitplayer-time-display';
-    display.textContent = '0:00 / 0:00';
-    return display;
-  }
-
-  private createSettingsButton(): HTMLElement {
-    const button = this.createButton('settings');
-    const menu = document.createElement('div');
-    menu.className = 'bitplayer-settings-menu';
-    
-    // Add playback rate options
-    this.options.playbackRates.forEach(rate => {
-      const option = document.createElement('button');
-      option.textContent = `${rate}x`;
-      option.onclick = () => this.setPlaybackRate(rate);
-      menu.appendChild(option);
-    });
-
-    button.appendChild(menu);
-    return button;
   }
 
   private attachEventListeners(): void {
@@ -168,7 +146,7 @@ class BitPlayer {
       this.controls.querySelector('.bitplayer-fullscreen-button')
         ?.addEventListener('click', () => this.toggleFullscreen());
       
-      this.controls.querySelector('.bitplayer-volume-slider')
+      this.controls.querySelector('.bitplayer-volume-bar')
         ?.addEventListener('input', (e) => {
           const target = e.target as HTMLInputElement;
           this.setVolume(parseFloat(target.value));
@@ -266,19 +244,20 @@ class BitPlayer {
 
   private updateTimeDisplay(): void {
     if (!this.controls) return;
-    const timeDisplay = this.controls.querySelector('.bitplayer-time-display');
+    const timeDisplay = this.controls.querySelector('.bitplayer-time');
     if (!timeDisplay) return;
 
     const current = this.formatTime(this.video.currentTime);
     const total = this.formatTime(this.video.duration);
-    timeDisplay.textContent = `${current} / ${total}`;
+    timeDisplay.querySelector('.bitplayer-current-time').textContent = current;
+    timeDisplay.querySelector('.bitplayer-duration').textContent = total;
   }
 
   private onTimeUpdate(): void {
     this.updateTimeDisplay();
     if (!this.controls) return;
     
-    const progress = this.controls.querySelector('.bitplayer-progress') as HTMLProgressElement;
+    const progress = this.controls.querySelector('.bitplayer-progress-bar') as HTMLInputElement;
     if (progress) {
       progress.value = (this.video.currentTime / this.video.duration) * 100;
     }
@@ -288,7 +267,7 @@ class BitPlayer {
     if (!this.controls) return;
     const playButton = this.controls.querySelector('.bitplayer-play-button');
     if (playButton) {
-      playButton.innerHTML = this.getButtonIcon(this.video.paused ? 'play' : 'pause');
+      playButton.innerHTML = this.getIcon(this.video.paused ? 'play' : 'pause');
     }
   }
 
@@ -296,13 +275,13 @@ class BitPlayer {
     if (!this.controls) return;
     const volumeButton = this.controls.querySelector('.bitplayer-volume-button');
     if (volumeButton) {
-      volumeButton.innerHTML = this.getButtonIcon(
+      volumeButton.innerHTML = this.getIcon(
         this.video.muted || this.video.volume === 0 ? 'volume-mute' : 'volume'
       );
     }
   }
 
-  private getButtonIcon(type: string): string {
+  private getIcon(type: string): string {
     const icons = {
       play: '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>',
       pause: '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>',
